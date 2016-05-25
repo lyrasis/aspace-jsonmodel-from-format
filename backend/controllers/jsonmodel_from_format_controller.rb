@@ -15,23 +15,23 @@ class ArchivesSpaceService < Sinatra::Base
   def converter_tree
     {
       accession: {
-        csv: ->(content) { AccessionConverter.new( get_tempfile( parse_as_csv(content) ).path ) },
+        csv: ->(content) { init_converter(AccessionConverter, :parse_as_csv, content) },
       },
       agent: {
-        eac: ->(content) { EACConverter.new( get_tempfile( parse_as_xml(content) ).path ) },
+        eac: ->(content) { init_converter(EACConverter, :parse_as_xml, content) },
       },
       digital_object: {
-        csv: ->(content) { DigitalObjectConverter.new( get_tempfile( parse_as_csv(content) ).path ) },
+        csv: ->(content) { init_converter(DigitalObjectConverter, :parse_as_csv, content) },
       },
       resource: {
-        ead: ->(content) { EADConverter.new( get_tempfile( parse_as_xml(content) ).path ) },
-        marcxml: ->(content) { MarcXMLConverter.new( get_tempfile( parse_as_xml(content) ).path ) },
+        ead: ->(content) { init_converter(EADConverter, :parse_as_xml, content) },
+        marcxml: ->(content) { init_converter(MarcXMLConverter, :parse_as_xml, content) },
       },
     }
   end
 
   def get_converter(type, format, content)
-    converter = converter_tree[type.intern][format.intern]
+    converter = converter_tree[type.to_sym][format.to_sym]
     converter.call content
   end
 
@@ -45,11 +45,25 @@ class ArchivesSpaceService < Sinatra::Base
     tmp
   end
 
-  def handle_response(converter)
+  def init_converter(converter_type, parser_type, content)
+    # check we can parse content and get tmp file
+    tmpfile = get_tempfile( self.send(parser_type, content) )
+    # init new converter
+    converter = converter_type.send(:new, tmpfile.path)
+    # run the converter now to generate the output
     converter.run
+    # remove the tmpfile handle and delete the file
+    tmpfile.close!
+    # return converter
+    converter
+  end
+
+  def handle_response(converter)
     content_type :json
-    parsed = JSON(IO.read(converter.get_output_path))
-    JSON.generate(parsed)   
+    output_path = converter.get_output_path
+    parsed = JSON(IO.read(output_path))
+    File.unlink(output_path) # needed ???
+    JSON.generate(parsed)
   end
 
   def parse_as_csv(content)
