@@ -1,5 +1,4 @@
-JSONModel from format plugin
-==================
+# JSONModel from format plugin
 
 Get a jsonmodel representation of a record from a string or file. For example you can get the ArchivesSpace jsonmodel representation of a resource record from raw EAD, or a digital object record(s) from csv (any format that ArchivesSpace provides an importer for).
 
@@ -16,8 +15,7 @@ Note, this does not automatically import the record. To import you still need to
   - ead
   - marcxml
 
-Installation
-------------
+## Installation
 
 Download the plugin to the ArchivesSpace plugins folder and enable it in `config.rb`:
 
@@ -25,8 +23,7 @@ Download the plugin to the ArchivesSpace plugins folder and enable it in `config
 AppConfig[:plugins] << "aspace-jsonmodel-from-format"
 ```
 
-Examples
---------
+## Examples
 
 To follow the examples grab a session token:
 
@@ -40,8 +37,7 @@ _Modify the hostname, port, username and password if needed_
 
 The examples assume that commands are run from the `aspace-jsonmodel-from-format` plugin folder.
 
-Resources
----------
+## Resources
 
 **EAD**
 
@@ -65,8 +61,7 @@ curl -H "Content-Type: application/json" -H "X-ArchivesSpace-Session: $TOKEN" -X
 
 The input file can contain multiple ead or marcxml records if they are wrapped in a `collection` tag.
 
-Digital Objects
----------------
+## Digital Objects
 
 ```
 # example digital object with --data-binary to preserve data as sent
@@ -76,8 +71,7 @@ curl -H "Content-Type: text/plain" -H "X-ArchivesSpace-Session: $TOKEN" -X POST 
 curl -H "Content-Type: application/json" -H "Content-type:text/xml" -H "X-ArchivesSpace-Session: $TOKEN" -X POST -d @do.json "http://localhost:8089/repositories/2/batch_imports"
 ```
 
-Accessions
-----------
+## Accessions
 
 ```
 # example accession records with --data-binary to preserve data as sent
@@ -87,8 +81,7 @@ curl  -H "Content-Type: text/plain" -H "X-ArchivesSpace-Session: $TOKEN" -X POST
 curl -H "Content-Type: application/json" -H "X-ArchivesSpace-Session: $TOKEN" -X POST -d @acc.json "http://localhost:8089/repositories/2/batch_imports"
 ```
 
-Agents
-------
+## Agents
 
 ```
 curl -H "Content-Type: text/xml" -H "X-ArchivesSpace-Session: $TOKEN" -X POST -d @examples/eac.xml "http://localhost:8089/plugins/jsonmodel_from_format/agent/eac" > eac.json
@@ -96,5 +89,9 @@ curl -H "Content-Type: text/xml" -H "X-ArchivesSpace-Session: $TOKEN" -X POST -d
 # import it
 curl -H "Content-Type: application/json" -H "X-ArchivesSpace-Session: $TOKEN" -X POST -d @eac.json "http://localhost:8089/repositories/2/batch_imports"
 ```
+
+## License
+
+This plugin is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
 ---
