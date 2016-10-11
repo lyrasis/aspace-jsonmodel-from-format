@@ -6,73 +6,14 @@ class ArchivesSpaceService < Sinatra::Base
     .permissions([:view_all_records])
     .returns([200, "Array of object :types"]) \
   do
-    converter = get_converter params[:type], params[:format], request.body.read
-    handle_response converter
-  end
-
-  private
-
-  def converter_tree
-    {
-      accession: {
-        csv: ->(content) { init_converter(AccessionConverter, :parse_as_csv, content) },
-      },
-      agent: {
-        eac: ->(content) { init_converter(EACConverter, :parse_as_xml, content) },
-      },
-      digital_object: {
-        csv: ->(content) { init_converter(DigitalObjectConverter, :parse_as_csv, content) },
-      },
-      resource: {
-        ead: ->(content) { init_converter(EADConverter, :parse_as_xml, content) },
-        marcxml: ->(content) { init_converter(MarcXMLConverter, :parse_as_xml, content) },
-      },
-    }
-  end
-
-  def get_converter(type, format, content)
-    converter = converter_tree[type.to_sym][format.to_sym]
-    converter.call content
-  end
-
-  # from the aspace source =)
-  def get_tempfile(content)
-    tmp = ASUtils.tempfile("doc-#{Time.now.to_i}")
-    tmp.write(content)
-    tmp.flush
-    $icky_hack_to_avoid_gc ||= []
-    $icky_hack_to_avoid_gc << tmp
-    tmp
-  end
-
-  def init_converter(converter_type, parser_type, content)
-    # check we can parse content and get tmp file
-    tmpfile = get_tempfile( self.send(parser_type, content) )
-    # init new converter
-    converter = converter_type.send(:new, tmpfile.path)
-    # run the converter now to generate the output
-    converter.run
-    # remove the tmpfile handle and delete the file
-    tmpfile.close!
-    # return converter
-    converter
-  end
-
-  def handle_response(converter)
+    # TODO: better error handling
+    converter_tree  = AppConfig[:converter_tree]
+    converter_class = converter_tree[params[:type].to_sym][params[:format].to_sym][:converter_class]
+    parse_method    = converter_tree[params[:type].to_sym][params[:format].to_sym][:parse_method]
+    content         = request.body.read
+    converter       = ArchivesSpace::JsonModelFromFormat.new(converter_class, parse_method, content)
     content_type :json
-    output_path = converter.get_output_path
-    parsed = JSON(IO.read(output_path))
-    File.unlink(output_path) # needed ???
-    JSON.generate(parsed)
-  end
-
-  def parse_as_csv(content)
-    CSV.parse(content) # check it's parseable
-    content
-  end
-
-  def parse_as_xml(content)
-    Nokogiri::XML(content).to_s
+    converter.run # returns json
   end
 
 end

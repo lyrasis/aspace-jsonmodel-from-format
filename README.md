@@ -4,7 +4,7 @@ Get a jsonmodel representation of a record from a string or file. For example yo
 
 Note, this does not automatically import the record. To import you still need to post the json to the batch imports api endpoint if that is the goal (examples are provided below).
 
-**Types**
+## Default types
 
 - accession
   - csv
@@ -88,6 +88,24 @@ curl -H "Content-Type: text/xml" -H "X-ArchivesSpace-Session: $TOKEN" -X POST -d
 
 # import it
 curl -H "Content-Type: application/json" -H "X-ArchivesSpace-Session: $TOKEN" -X POST -d @eac.json "http://localhost:8089/repositories/2/batch_imports"
+```
+
+## Tesing with Docker
+
+```bash
+mkdir -p plugins/aspace-jsonmodel-from-format
+cp -r backend plugins/aspace-jsonmodel-from-format
+
+docker run --name archivesspace -d \
+  -p 8080:8080 \
+  -p 8081:8081 \
+  -p 8089:8089 \
+  -p 8090:8090 \
+  -v $(pwd)/config:/archivesspace/config \
+  -v $(pwd)/plugins:/archivesspace/plugins \
+  lyrasis/archivesspace:1.5.2
+
+docker logs -f --tail=50 archivesspace
 ```
 
 ## License
