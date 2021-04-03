@@ -1,7 +1,7 @@
+# frozen_string_literal: true
+
 module ArchivesSpace
-
   class JsonModelFromFormat
-
     attr_reader :parsed_data
 
     def initialize(converter_class, parse_method, content)
@@ -22,17 +22,11 @@ module ArchivesSpace
     end
 
     def run_converter
-      # check we can parse content
-      parsed_data = self.send(@parse_method)
-      # write parsed data to tmpfile
+      parsed_data = send(@parse_method)
       tmpfile = JsonModelFromFormat.write_tempfile(parsed_data)
-      # init new converter
       converter = @converter_class.send(:new, tmpfile.path)
-      # run the converter now to generate the output
       converter.run
-      # remove the tmpfile handle and delete the file
       tmpfile.close!
-      # return converter
       converter
     end
 
@@ -54,7 +48,5 @@ module ArchivesSpace
       $icky_hack_to_avoid_gc << tmp
       tmp
     end
-
   end
-
 end

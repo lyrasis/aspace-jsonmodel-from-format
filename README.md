@@ -141,7 +141,7 @@ curl \
   "http://localhost:8089/repositories/2/batch_imports"
 ```
 
-## Tesing with Docker
+## Testing with Docker
 
 ```bash
 mkdir -p plugins/aspace-jsonmodel-from-format
@@ -154,7 +154,7 @@ docker run --name archivesspace -d \
   -p 8090:8090 \
   -v $(pwd)/config:/archivesspace/config \
   -v $(pwd)/plugins:/archivesspace/plugins \
-  lyrasis/archivesspace:2.5.2
+  archivesspace/archivesspace:3.0.0
 
 docker logs -f --tail=50 archivesspace
 ```
