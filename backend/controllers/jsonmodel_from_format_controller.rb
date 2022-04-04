@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 class ArchivesSpaceService < Sinatra::Base
-  Endpoint.post('/plugins/jsonmodel_from_format/:type/:format')
+  Endpoint.post('/plugins/jsonmodel_from_format/repositories/:id/:type/:format')
           .description('Convert :type by :format into a JSONModel equivalent')
-          .params(['type', String, 'Type'], ['format', String, 'Format'])
+          .params(
+            ['id', Integer, 'Id'], ['type', String, 'Type'], ['format', String, 'Format']
+          )
           .permissions([:view_all_records])
           .returns([200, 'Array of object :types']) \
   do
@@ -14,6 +16,8 @@ class ArchivesSpaceService < Sinatra::Base
     content         = request.body.read
     converter       = ArchivesSpace::JsonModelFromFormat.new(converter_class, parse_method, content)
     content_type :json
-    converter.run # returns json
+    RequestContext.open(:repo_id => params[:id]) do
+      converter.run # returns json
+    end
   end
 end
