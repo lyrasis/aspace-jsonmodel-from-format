@@ -1,6 +1,6 @@
 {
   'publish' => {
     'type' => 'boolean',
-    'default' => AppConfig[:agent_records_default_publish] ||= false
+    'default' => AppConfig[:agent_records_default_publish]
   }
 }

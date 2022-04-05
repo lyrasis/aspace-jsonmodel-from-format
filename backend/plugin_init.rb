@@ -46,3 +46,7 @@ unless AppConfig.has_key?(:converter_tree)
     }
   }
 end
+
+unless AppConfig.has_key? :agent_records_default_publish
+  AppConfig[:agent_records_default_publish] = false
+end

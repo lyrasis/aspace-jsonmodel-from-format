@@ -1,8 +1,13 @@
 # JSONModel from format plugin
 
-Get a jsonmodel representation of a record from a string or file. For example you can get the ArchivesSpace jsonmodel representation of a resource record from raw EAD, or a digital object record(s) from csv (any format that ArchivesSpace provides an importer for).
+Get a jsonmodel representation of a record from a string or file. For example
+you can get the ArchivesSpace jsonmodel representation of a resource record
+from raw EAD, or a digital object record(s) from csv (any format that
+ArchivesSpace provides an importer for).
 
-Note, this does not automatically import the record. To import you still need to post the json to the batch imports api endpoint if that is the goal (examples are provided below).
+Note, this does not automatically import the record. To import you still need
+to post the json to the batch imports api endpoint if that is the goal (examples
+are provided below).
 
 ## Default types
 
@@ -48,7 +53,7 @@ curl \
   -H "X-ArchivesSpace-Session: $TOKEN" \
   -X POST \
   -d @examples/ead.xml \
-  "http://localhost:8089/plugins/jsonmodel_from_format/resource/ead" > ead.json
+  "http://localhost:8089/plugins/jsonmodel_from_format/repositories/2/resource/ead" > ead.json
 
 # import it by sending it to the batch_imports endpoint
 curl \
@@ -68,7 +73,7 @@ curl \
   -H "X-ArchivesSpace-Session: $TOKEN" \
   -X POST \
   -d @examples/marc.xml \
-  "http://localhost:8089/plugins/jsonmodel_from_format/resource/marcxml" > marc.json
+  "http://localhost:8089/plugins/jsonmodel_from_format/repositories/2/resource/marcxml" > marc.json
 
 # import it
 curl \
@@ -90,7 +95,7 @@ curl \
   -H "X-ArchivesSpace-Session: $TOKEN" \
   -X POST \
   --data-binary @examples/do.csv \
-  "http://localhost:8089/plugins/jsonmodel_from_format/digital_object/csv" > do.json
+  "http://localhost:8089/plugins/jsonmodel_from_format/repositories/2/digital_object/csv" > do.json
 
 # import it
 curl \
@@ -111,7 +116,7 @@ curl \
   -H "X-ArchivesSpace-Session: $TOKEN" \
   -X POST \
   --data-binary @examples/acc.csv \
-  "http://localhost:8089/plugins/jsonmodel_from_format/accession/csv" > acc.json
+  "http://localhost:8089/plugins/jsonmodel_from_format/repositories/2/accession/csv" > acc.json
 
 # import it
 curl \
@@ -154,7 +159,7 @@ docker run --name archivesspace -d \
   -p 8090:8090 \
   -v $(pwd)/config:/archivesspace/config \
   -v $(pwd)/plugins:/archivesspace/plugins \
-  archivesspace/archivesspace:3.0.0
+  archivesspace/archivesspace:3.2.0
 
 docker logs -f --tail=50 archivesspace
 ```
