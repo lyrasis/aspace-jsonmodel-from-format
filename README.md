@@ -152,15 +152,7 @@ curl \
 mkdir -p plugins/aspace-jsonmodel-from-format
 cp -r backend plugins/aspace-jsonmodel-from-format
 
-docker run --name archivesspace -d \
-  -p 8080:8080 \
-  -p 8081:8081 \
-  -p 8089:8089 \
-  -p 8090:8090 \
-  -v $(pwd)/config:/archivesspace/config \
-  -v $(pwd)/plugins:/archivesspace/plugins \
-  archivesspace/archivesspace:3.2.0
-
+docker compose up --detach
 docker logs -f --tail=50 archivesspace
 ```
 
